@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='utf-8'?>
+<e:Skin class="PayTimeBuyPropSkin" xmlns:e="http://ns.egret.com/eui" xmlns:ns1="*" xmlns:w="http://ns.egret.com/wing" height="540" width="460"  states="prop,design"  height.design="600">
+	<ns1:BasePanelBg x="0" y="0" width="100%" height="100%" skinName="BasePanelBgSkin" currentState="s2"/>
+	<e:Rect width="370" height="136" y="70" horizontalCenter="0" fillColor="0x311e51" ellipseHeight="20" ellipseWidth="20" anchorOffsetY.design="0" horizontalCenter.design="0" height.design="197"/>
+	<e:Rect width="370" height="210" y="210" horizontalCenter="0" fillColor="0x311e51" ellipseHeight="20" ellipseWidth="20" horizontalCenter.design="0" y.design="274"/>
+
+	<!--<e:Image id="img" height="90" width="90" y="27" horizontalCenter="-98"/>-->
+	<ns1:PropMc id="prop" skinName="PropMcSkin" y="74"  x="30" currentState="s2" x.design="53.5" y.design="79"/>
+	<e:Label id="nameTxt" size="22" text="aaa" x="156"  y="81" width="120" textColor="0xffffff" x.design="195"/>
+
+	<e:Label id="descTxt" y="140" lineSpacing="10" width="270" size="22" height="58" x="156" text="123" textColor="0x9ca3ff" x.design="195" anchorOffsetX.design="0" width.design="217"/>
+	<e:Label size="22" text="拥有：" x="156"  y="111" textColor="0xffffff" x.design="195"/>
+	<e:Label id="numTxt" x="213" y="111" size="22" textColor="0xffffff" text="123" x.design="252"/>
+	<e:Group id="con" x="45" y="119" y.design="179">
+		<e:Label y="127" size="22" text="数量" x="70" textColor="0xffffff"/>
+		<e:Label y="180" size="22" text="价格拥有" lineSpacing="31" width="45" x="70" textColor="0xffffff"/>
+		<e:Rect x="128" y="124" width="120" height="28" ellipseWidth="26" ellipseHeight="26" fillColor="0xffffff" strokeWeight="1" strokeColor="0xc8c8c8"/>
+		<e:Label id="buyNumTxt" size="22" text="aaa" x="143"  y="127" textColor="0x6a6a6a" width="90" textAlign="center"/>
+		<ns1:CommonCoin id="costTxt" x="128" y="173" skinName="CommonCoinSkin" currentState="fCon" width="120"/>
+		<!--<ns1:CommonCoin id="priceTxt" y="-7" x="162" currentState="coin" skinName="CommonCoinSkin"/>-->
+		<ns1:CommonCoin id="haveTxt" currentState="coin" width="120" y="226" skinName="CommonCoinSkin" x="128"/>
+		<e:Button id="buyBtn" label="按钮" skinName="ButtonSkin_a3" x="200" y="332"/>
+		<!--<e:Label y="0" textColor="0xa7a7a7" text="单价：" x="113" size="15"/>-->
+	</e:Group>
+	<e:Button id="closeBtn" bottom="38" label="取消" y="10" skinName="ButtonSkin_a2" x="77"/>
+</e:Skin>

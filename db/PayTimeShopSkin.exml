@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<e:Skin class="PayTimeShopSkin" xmlns:e="http://ns.egret.com/eui" xmlns:ns1="*" xmlns:w="http://ns.egret.com/wing"
+        height="620" width="620">
+	
+	<e:Image x="182" y="15" source="value_bg_png"/>
+	<e:Image x="189" y="21" source="clock_icon_png"/>
+	<e:Label id="timeTxt" size="22" text="00:00:00" x="216"  y="22" textColor="0x9aadff"/>
+	<e:Button id="buyBtn" label="一键购买" x="327" y="10" skinName="ButtonSkin_a2"/>
+
+	<ns1:ScrollList id="list" top="80" bottom="0" anchorOffsetY="0" width="540" horizontalCenter="10">
+		<e:layout>
+			<e:TileLayout verticalGap="20" horizontalGap="50"/>
+		</e:layout>
+	</ns1:ScrollList>
+	
+</e:Skin>
+
