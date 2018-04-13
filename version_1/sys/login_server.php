@@ -16,7 +16,7 @@
 		$lastLand = $userData['last_land'];
 		$userData['last_land'] = $time;
 		$userData['land_key'] = $time;
-		$userData = new GameUser($userData,$userOpen);
+		$userData = new GameUser($userData,true);
 		
 		
 		//用户数据处理

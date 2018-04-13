@@ -14,6 +14,7 @@ class GameUser{
 	public $use_prop;
 	public $current_role;
 	public $history_role;
+	public $world;
 	public $active;
 	public $rmb;
 	
@@ -39,9 +40,10 @@ class GameUser{
 		$this->land_key = (int)$data['land_key'];
 		$this->prop = $this->decode($data['prop']);
 		$this->use_prop = $this->decode($data['use_prop']);
+		$this->world = $this->decode($data['world']);
 		$this->active = $this->decode($data['active'],'{"task":{}}');//»î¶¯
-		$this->current_role = $this->decode($data['current_role'],'{"list":{}}');
-		$this->history_role = $this->decode($data['history_role'],'{"list":{}}');
+		$this->current_role = $this->decode($data['current_role'],'{"list":[]}');
+		$this->history_role = $this->decode($data['history_role'],'{"list":[]}');
 		
 	}
 	
@@ -159,7 +161,9 @@ class GameUser{
 		if($this->changeKey['history_role'])
 			array_push($arr,addKey('history_role',$this->history_role,true));	
 		if($this->changeKey['active'])
-			array_push($arr,addKey('active',$this->active,true));	
+			array_push($arr,addKey('active',$this->active,true));
+		if($this->changeKey['world'])
+			array_push($arr,addKey('world',$this->world,true));	
 				
 			
 			
