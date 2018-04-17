@@ -25,7 +25,7 @@ do{
 
 	//可以注册
 	$time = time();
-	$sql = "insert into ".getSQLTable('user_data')."(gameid,nick,last_land,land_key) values('".$gameid."','".$nick."',".$time.",'".$time."')";
+	$sql = "insert into ".getSQLTable('user_data')."(gameid,nick,last_land,land_key,register_time) values('".$gameid."','".$nick."',".$time.",'".$time."',".$time.")";
 	$num = $conne->uidRst($sql);
 	if($num == 1){//注册成功
 		$returnData->data = 'success';

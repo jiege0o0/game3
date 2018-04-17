@@ -26,11 +26,11 @@ diamond INT UNSIGNED default 100,
 rmb INT UNSIGNED default 100,
 prop Text,
 use_prop Text,
-current_role Text,
-history_role Text,
+world Text,
 active Text,
 land_key varchar(63),
-last_land INT UNSIGNED
+last_land INT UNSIGNED，
+register_time INT UNSIGNED
 )",$connect)or die("message=F,Invalid query: " . mysql_error()); 
 
 

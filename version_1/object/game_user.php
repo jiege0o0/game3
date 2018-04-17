@@ -12,8 +12,6 @@ class GameUser{
 	public $prop;
 	public $diamond;
 	public $use_prop;
-	public $current_role;
-	public $history_role;
 	public $world;
 	public $active;
 	public $rmb;
@@ -41,10 +39,7 @@ class GameUser{
 		$this->prop = $this->decode($data['prop']);
 		$this->use_prop = $this->decode($data['use_prop']);
 		$this->world = $this->decode($data['world']);
-		$this->active = $this->decode($data['active'],'{"task":{}}');//活动
-		$this->current_role = $this->decode($data['current_role'],'{"list":[]}');
-		$this->history_role = $this->decode($data['history_role'],'{"list":[]}');
-		
+		$this->active = $this->decode($data['active'],'{"task":{}}');//活动		
 	}
 	
 	function decode($v,$default = null){
@@ -156,10 +151,6 @@ class GameUser{
 			array_push($arr,addKey('use_prop',$this->use_prop,true));
 		if($this->changeKey['prop'])
 			array_push($arr,addKey('prop',$this->prop,true));
-		if($this->changeKey['current_role'])
-			array_push($arr,addKey('current_role',$this->current_role,true));	
-		if($this->changeKey['history_role'])
-			array_push($arr,addKey('history_role',$this->history_role,true));	
 		if($this->changeKey['active'])
 			array_push($arr,addKey('active',$this->active,true));
 		if($this->changeKey['world'])
