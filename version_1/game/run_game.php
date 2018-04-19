@@ -1,4 +1,5 @@
-<?php 
+<?php
+require_once($filePath."game/game_tool.php");
 do{
 	if(!$userData->world->begintime)
 	{
@@ -9,11 +10,25 @@ do{
 		$userData->world->force = rand(6,8);
 	}
 	$currentTime = (time() - $userData->world->begintime)- $userData->world->icetime;
-	$toTime = $currentTime + 3600;//Éú³Éµ½µÄÊÀ½çÊ±¼ä
+	$toTime = $currentTime + 30*60;//ç”Ÿæˆåˆ°çš„ä¸–ç•Œæ—¶é—´
 	$cd = $toTime - $userData->world->lasttime;
-	if($cd < 10*60)//10·ÖÖÓÄÚ²»´¦Àí
+	$historyActionRole = array();
+	
+	$url  = $dataFilePath.'user_world/server'.$serverID.'/'.$userData->gameid.'.txt';
+	
+	if(file_exists($url))
+		$myData = json_decode(file_get_contents($url));
+		
+	if($myData && $cd < 10*60)//10åˆ†é’Ÿå†…ä¸å¤„ç†
+	{
+		foreach($myData->historyAction as $key=>$value)
+		{
+			array_push($historyActionRole,$value->id);
+		}
 		break;
-	if($cd > 3600*24)//³¬¹ý1ÌìµÄ½øÈë¶³½áÊ±¼ä
+	}
+		
+	if($cd > 3600*24)//è¶…è¿‡1å¤©çš„è¿›å…¥å†»ç»“æ—¶é—´
 	{
 		$iceCD = $cd - 3600*24;
 		$userData->world->icetime += $iceCD;
@@ -21,11 +36,12 @@ do{
 		$currentTime -= $iceCD;
 		$cd = 3600*24;
 	}
-	require_once($filePath."game/game_tool.php");
-	$myfile = fopen("webdictionary.txt", "w+");
-	$myData = fread($myfile,filesize("webdictionary.txt"));
+	
+	
+	require_once($filePath."game/game_action.php");
+	
 	if(!$myData)
-	{
+	{	
 		$myData = new stdClass();
 		$myData->world = array();
 		
@@ -34,21 +50,22 @@ do{
 			array_push($myData->world,createPlace());
 		}
 		
-		$myData->current = array();//µ±Ç°Êý¾Ý
-		$myData->rank = array();//ÅÅÐÐ
-		$myData->action = array();//´ýÖ´ÐÐ
-		$myData->historyAction = array();//×î½üÈÕÖ¾
-		$myData->role = new stdClass();//½ÇÉ«Êý¾Ý
-		$myData->cleanTime = time();//ÒªÕæÊµÊ±¼ä
+		$myData->current = array();//å½“å‰æ•°æ®
+		$myData->rank = array();//æŽ’è¡Œ
+		$myData->action = array();//å¾…æ‰§è¡Œ
+		$myData->historyAction = array();//æœ€è¿‘æ—¥å¿—
+		$myData->role = new stdClass();//è§’è‰²æ•°æ®
+		$myData->cleanTime = time();//è¦çœŸå®žæ—¶é—´
 	}
 	
 	
-	$aliveNum = 0;//´æÔÚµÄ½ÇÉ«ÊýÁ¿
+	
+	$aliveNum = 0;//å­˜åœ¨çš„è§’è‰²æ•°é‡
 	$aliveArr = array();
 	$dieArr = array();
 	foreach($myData->current as $key=>$value)
 	{
-		if($myData->role[$value]->d)
+		if($myData->role->{$value}->d)
 			array_push($dieArr,$value);
 		else
 		{
@@ -57,15 +74,17 @@ do{
 		}
 	}
 	
-	//ÐÂÔöÊý¾Ý
-	for($i=0;i<$cd;i+=rand(50,80))
+	$newRole = array();
+	//æ–°å¢žæ•°æ®
+	for($i=0;$i<$cd;$i+=rand(50,80))
 	{
 		$roleTime = $userData->world->lasttime + $i;
-		if($aliveNum < 30)//´´½¨
+		if($aliveNum < 30)//åˆ›å»º
 		{
 			$role = createRole($userData->world->roleid,$roleTime);
 			array_push($aliveArr,$userData->world->roleid);
-			$myData->role->{$userData->world->roleid} = $role
+			array_push($newRole,$userData->world->roleid);
+			$myData->role->{$userData->world->roleid} = $role;
 			$userData->world->roleid ++;
 			$aliveNum ++;
 		}
@@ -92,7 +111,7 @@ do{
 	$userData->world->lasttime = $toTime; 
 	$myData->current = array_merge($aliveArr,$dieArr);
 	
-	//´¦Àí¶¯×÷Êý¾Ý
+	//å¤„ç†åŠ¨ä½œæ•°æ®
 	$rankLen = 20;
 	$newDie = array();
 	$rankForce = 0;
@@ -101,6 +120,8 @@ do{
 		$id = $myData->rank[$rankLen-1];
 		$rankForce = $myData->role->{$id}->f; 
 	}
+	
+	
 	while(true)
 	{
 		if(!$myData->action[0] || $myData->action[0]->t > $currentTime)
@@ -109,7 +130,7 @@ do{
 		$id = $oo->id;
 		$role = $myData->role->{$id};
 		$role->f += $oo->f;
-		if($role->ty == 1)//ËÀÁË
+		if($role->ty == 1)//æ­»äº†
 		{
 			$role->d = $oo->t;
 			array_push($newDie,$id);
@@ -120,11 +141,14 @@ do{
 			if($role->f > $rankForce)
 				array_push($myData->rank,$id);
 		}
-		array_push($role->a,$oo);
+		array_unshift($role->a,$oo);
 		array_unshift($myData->historyAction,$oo);
+		array_unshift($historyActionRole,$id);
 	}
 	
-	//¼ÇÂ¼20ÌõÓÃÓÚÊ×Ò³ÏÔÊ¾
+	
+	
+	//è®°å½•20æ¡ç”¨äºŽé¦–é¡µæ˜¾ç¤º
 	if(count($myData->historyAction) > 20)
 	{
 		$myData->historyAction = array_slice($myData->historyAction,0,20);
@@ -133,7 +157,7 @@ do{
 	
 	if(count($myData->rank) > $rankLen)
 	{
-		//ÖØÐÂÅÅÐò
+		//é‡æ–°æŽ’åº
 		$arr = array();
 		foreach($myData->rank as $key=>$value)
 		{
@@ -151,10 +175,10 @@ do{
 	
 	
 	
-	//ÇåÀí¹ýÆÚÊý¾Ý
+	//æ¸…ç†è¿‡æœŸæ•°æ®
 	if(time() - $myData->cleanTime > 48*3600)
 	{
-		//¹ýÆÚ½ÇÉ«
+		//è¿‡æœŸè§’è‰²
 		$myData->cleanTime = time();
 		$cleanDieTime = $currentTime - 36*3600;
 		$ownData = new stdClass();
@@ -179,7 +203,7 @@ do{
 			unset($myData->role->{$value});
 		}
 		
-		//¹ýÆÚµØ·½
+		//è¿‡æœŸåœ°æ–¹
 		array_shift($myData->world);
 		$maxWorld = 18 + 2*$userData->level;
 		while(count($myData->world) < $maxWorld)
@@ -187,9 +211,16 @@ do{
 	}
 	
 	
+	$myfile = fopen($url, "w+");
+	fwrite($myfile, json_encode($myData));
+	fclose($myfile);
 	
-}while(false)
+	$writeDB = true;
+	$userData->setChangeKey('world');
+	
+}while(false);
 
+//æŽ’è¡Œæ¦œæŽ’åº
 function my_rank_sort($a,$b)
 {
 	if ($a->f > $b->f)
@@ -198,14 +229,6 @@ function my_rank_sort($a,$b)
 		return 1;
 	return 0;
 }
+
+
 ?> 
-
-
-
-
-
-
-
-
-
-

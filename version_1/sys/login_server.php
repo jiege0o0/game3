@@ -63,6 +63,23 @@
 			$writeDB = true;
 		}
 		
+		require_once($filePath."game/run_game.php");
+		
+		$returnData->game = new stdClass();
+		$returnData->game->action = $myData->action;
+		$returnData->game->current = $myData->current;
+		// $returnData->game->rank = $myData->rank;
+		$returnData->game->history = $myData->historyAction;
+		$returnData->game->die = $newDie;
+		
+		if($newDie)	
+			$arr = array_merge($myData->current,$newDie,$historyActionRole);
+		else
+			$arr = array_merge($myData->current,$historyActionRole);
+			
+		$returnData->game->role = getRoleBase($myData->current,$myData->role);
+		
+		
 		if($writeDB)
 		{
 			$userData->write2DB(true);
@@ -84,6 +101,8 @@
 					$returnData->mailnum = count($result);
 			}
 		}
+		
+		
 		
 		
 		
