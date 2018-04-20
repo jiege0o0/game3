@@ -100,10 +100,8 @@
 					$mySendData->error = 2;
 					break;
 				}
-				
-				$sql = "select * from ".getSQLTable('user_open')." where gameid='".$msg->gameid."'";
-				$userOpen = $conne->getRowsRst($sql);
-				$userData = new GameUser($userData,$userOpen);
+
+				$userData = new GameUser($userData,true);
 			}	
 			
 			//登录的特殊处理

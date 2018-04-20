@@ -75,6 +75,7 @@ do{
 	}
 	
 	$newRole = array();
+	$newAction = array();
 	//新增数据
 	for($i=0;$i<$cd;$i+=rand(50,80))
 	{
@@ -97,6 +98,7 @@ do{
 
 			$action = createAction($role,$myData->world,$roleTime);
 			array_push($myData->action,$action);
+			array_push($newAction,$action);
 			if($role->d)
 			{
 				$aliveNum --;

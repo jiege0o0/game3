@@ -8,9 +8,12 @@
 		$obj = new stdClass();
 		foreach($roleData as $key=>$value)
 		{
+			if(!in_array($key,$ids))
+				continue;
 			if($obj->{$key})
 				continue;
 			$obj->{$key} = new stdClass();
+			$obj->{$key}->id = $value->id;
 			$obj->{$key}->f = $value->f;
 			$obj->{$key}->g = $value->g;
 			$obj->{$key}->n = $value->n;

@@ -23,7 +23,7 @@
 		$role->n = createName($role->g);//nick
 		$role->s = rand(1,300);//show
 		$role->b = $time - rand(5*$GameConfig->year,10*$GameConfig->year);//born
-		$role->f = (int)$userData->world->force*rand(80,120)/100;//force
+		$role->f = (int)($userData->world->force*rand(80,120)/100);//force
 		$role->a = array();//action
 		$role->t = $time;//lastTime
 		$role->d = 0;//dieTime
