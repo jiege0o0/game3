@@ -19,6 +19,7 @@
 			$obj->{$key}->n = $value->n;
 			$obj->{$key}->b = $value->b;
 			$obj->{$key}->d = $value->d;
+			$obj->{$key}->h = $value->h;
 		}
 		return $obj;
 	}

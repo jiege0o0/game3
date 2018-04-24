@@ -21,7 +21,7 @@
 		$role->id = $id;
 		$role->g = rand(1,2);//gender
 		$role->n = createName($role->g);//nick
-		$role->s = rand(1,300);//show
+		$role->h = rand(1,400);//head
 		$role->b = $time - rand(5*$GameConfig->year,10*$GameConfig->year);//born
 		$role->f = (int)($userData->world->force*rand(80,120)/100);//force
 		$role->a = array();//action
