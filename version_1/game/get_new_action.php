@@ -1,5 +1,5 @@
 <?php 
-	require_once($filePath."game/run_game.php");
+	require_once($filePath."game/tool/run_game.php");
 		
 	$returnData->action = $newAction;
 	if($newRole && count($newRole)>0)	

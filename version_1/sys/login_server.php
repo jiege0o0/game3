@@ -19,6 +19,8 @@
 		$userData = new GameUser($userData,true);
 		
 		
+		
+		
 		//用户数据处理
 		$addMailAward = false;
 		
@@ -63,7 +65,7 @@
 			$writeDB = true;
 		}
 		
-		require_once($filePath."game/run_game.php");
+		require_once($filePath."game/tool/run_game.php");
 		
 		$returnData->game = new stdClass();
 		$returnData->game->action = $myData->action;
@@ -77,7 +79,7 @@
 		else
 			$arr = array_merge($myData->current,$historyActionRole);
 			
-		$returnData->game->role = getRoleBase($myData->current,$myData->role);
+		$returnData->game->role = getRoleBase($arr,$myData->role);
 		
 		
 		if($writeDB)
@@ -107,6 +109,7 @@
 		
 		
 		//其它数据返回
+		unset($userData->prop);
 		$userData->pk_version = $pk_version;
 		$returnData->data = $userData;
 		$userData->opentime = $serverOpenTime;

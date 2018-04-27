@@ -1,7 +1,16 @@
 <?php 
 	$GameConfig = new stdClass();
 	$GameConfig->year = 30*60;//1年的长度，单位秒
+	$GameConfig->rankLen = 10;//
+	$GameConfig->currentLen = 30;//
+	$GameConfig->dieLen = 10;//
+	$GameConfig->historyLen = 20;//
 	
+	function createProp($quality){//首位为type,次位品质
+		$type = numToStr(1);
+		$quality = numToStr($quality);
+		return $type.$quality.'#'.base64_encode('Prop'.rand(1,999));
+	}
 	
 	//取基础数据
 	function getRoleBase($ids,&$roleData){

@@ -1,5 +1,5 @@
 <?php
-require_once($filePath."game/game_tool.php");
+require_once($filePath."game/tool/game_tool.php");
 do{
 	if(!$userData->world->begintime)
 	{
@@ -38,7 +38,7 @@ do{
 	}
 	
 	
-	require_once($filePath."game/game_action.php");
+	require_once($filePath."game/tool/game_action.php");
 	
 	if(!$myData)
 	{	
@@ -51,6 +51,7 @@ do{
 		}
 		
 		$myData->current = array();//当前数据
+		$myData->die = array();//当前数据
 		$myData->rank = array();//排行
 		$myData->action = array();//待执行
 		$myData->historyAction = array();//最近日志
@@ -65,7 +66,7 @@ do{
 	$dieArr = array();
 	foreach($myData->current as $key=>$value)
 	{
-		if($myData->role->{$value}->d)
+		if($myData->role->{$value}->d >= 0)
 			array_push($dieArr,$value);
 		else
 		{
@@ -80,7 +81,7 @@ do{
 	for($i=0;$i<$cd;$i+=rand(50,80))
 	{
 		$roleTime = $userData->world->lasttime + $i;
-		if($aliveNum < 30)//创建
+		if($aliveNum < $GameConfig->currentLen)//创建
 		{
 			$role = createRole($userData->world->roleid,$roleTime);
 			array_push($aliveArr,$userData->world->roleid);
@@ -96,10 +97,10 @@ do{
 			$role = $myData->role->{$id};
 			array_splice($aliveArr,$index,1);
 
-			$action = createAction($role,$myData->world,$roleTime);
+			$action = createAction($role,$roleTime,$myData->world);
 			array_push($myData->action,$action);
 			array_push($newAction,$action);
-			if($role->d)
+			if($role->d >= 0)
 			{
 				$aliveNum --;
 				array_push($dieArr,$id);
@@ -114,15 +115,14 @@ do{
 	$myData->current = array_merge($aliveArr,$dieArr);
 	
 	//处理动作数据
-	$rankLen = 20;
+	$rankLen = $GameConfig->rankLen;
 	$newDie = array();
 	$rankForce = 0;
 	if(count($myData->rank) >= $rankLen)
 	{
 		$id = $myData->rank[$rankLen-1];
 		$rankForce = $myData->role->{$id}->f; 
-	}
-	
+	}	
 	
 	while(true)
 	{
@@ -132,10 +132,11 @@ do{
 		$id = $oo->id;
 		$role = $myData->role->{$id};
 		$role->f += $oo->f;
-		if($role->ty == 1)//死了
+		if($oo->ty == 2)//死了
 		{
 			$role->d = $oo->t;
 			array_push($newDie,$id);
+			array_unshift($myData->die,$id);
 			
 			$index = array_search($id, $myData->current);
 			array_splice($myData->current,$index,1);
@@ -148,16 +149,21 @@ do{
 		array_unshift($historyActionRole,$id);
 	}
 	
-	
+	//记录10条最近死亡
+	if(count($myData->die) > $GameConfig->dieLen)
+	{
+		$myData->die = array_slice($myData->die,0,$GameConfig->dieLen);
+	}
 	
 	//记录20条用于首页显示
-	if(count($myData->historyAction) > 20)
+	if(count($myData->historyAction) > $GameConfig->historyLen)
 	{
-		$myData->historyAction = array_slice($myData->historyAction,0,20);
+		$myData->historyAction = array_slice($myData->historyAction,0,$GameConfig->historyLen);
+		$historyActionRole = array_slice($historyActionRole,0,$GameConfig->historyLen);
 	}
 	
 	
-	if(count($myData->rank) > $rankLen)
+	if(count($myData->rank) >= $rankLen)
 	{
 		//重新排序
 		$arr = array();
@@ -167,13 +173,31 @@ do{
 		}
 		usort($arr,"my_rank_sort");
 		$myData->rank = array();
-		foreach($myData->rank as $key=>$value)
+		foreach($arr as $key=>$value)
 		{
 			if($key >=$rankLen)
 				break;
 			array_push($myData->rank ,$value->id);
 		}
 	}
+	
+	//移除已生效的道具
+	$arr = array();
+	$b = false;
+	foreach($userData->prop->remove as $key=>$value)
+	{
+		$temp = explode("@",$value);
+		if((int)($temp[1]) > $currentTime)
+			array_push($arr,$value);
+		else
+			$b = true;
+	}
+	if($b)
+	{
+		$userData->prop->remove = $arr;
+		$userData->setChangeKey('prop');
+	}
+	
 	
 	
 	
@@ -186,11 +210,18 @@ do{
 		$ownData = new stdClass();
 		$removeArr = array();
 		
-		$len = count($myData->rank);
+		$len = count($myData->rank);//保留排行榜角色数据
 		for($i=$len-1;$i>=0;$i--)
 		{
 			$ownData->{$myData->rank[$i]} = true;
 		}
+		
+		$len = count($myData->die);//保留最近死亡角色数据
+		for($i=$len-1;$i>=0;$i--)
+		{
+			$ownData->{$myData->die[$i]} = true;
+		}
+		
 		
 		foreach($myData->role as $key=>$value)
 		{

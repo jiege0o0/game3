@@ -36,7 +36,7 @@ class GameUser{
 		$this->rmb = (int)$data['rmb'];
 		$this->diamond = (int)$data['diamond'];
 		$this->land_key = (int)$data['land_key'];
-		$this->prop = $this->decode($data['prop']);
+		$this->prop = $this->decode($data['prop'],'{"list":[],"remove":[]}');//已移除的
 		$this->use_prop = $this->decode($data['use_prop']);
 		$this->world = $this->decode($data['world']);
 		$this->active = $this->decode($data['active'],'{"task":{}}');//活动		
@@ -97,21 +97,23 @@ class GameUser{
 	}
 	
 	//改变道具数量
-	function addProp($propID,$num){
-		global $returnData;
-		if(!$this->prop->{$propID})
-		{
-			$this->prop->{$propID} = 0;
-		}
-			
-		$this->prop->{$propID} += $num;
+	function addProp($propID){
+		array_push($this->prop->list,$propID);
 		$this->setChangeKey('prop');	
-		
-		if(!$returnData->sync_prop)
-		{
-			$returnData->sync_prop = new stdClass();
-		}
-		$returnData->sync_prop->{$propID} = $this->prop->{$propID};
+
+	}
+	
+	function removeProp($propID,$time){
+		global $returnData;
+		array_push($this->prop->remove,$propID.'@'.$time);
+		$index = array_search(propID,$this->prop->list);
+		if($index === 0 || $index>0)
+			array_splice($this->prop->list,$index,1);
+		$this->setChangeKey('prop');
+
+		if(!$returnData->remove_prop)
+			$returnData->remove_prop = array();
+		array_push($returnData->remove_prop,$propID.'@'.$time);
 	}
 	
 
