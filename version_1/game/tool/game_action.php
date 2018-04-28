@@ -28,7 +28,7 @@
 		
 		//出生事件
 		$action = createAction($role,$role->t);
-		array_push($role->a,$action);
+		array_push($role->a,encodeAction($action));
 		
 		return $role;
 	}
@@ -40,8 +40,8 @@
 		
 		$action = new stdClass();
 		$action->id = $role->id;
-		$action->t = $time;
-		$action->f = (int)($userData->world->force*rand(3,5)/10*(($time - $role->t)/$GameConfig->year));//每年自然增长速度
+		$action->t = $time - $role->b;
+		$action->f = (int)($userData->world->force*rand(3,5)/10*(($time - $role->t)/$GameConfig->year/5));//每年自然增长速度
 		$action->ty = 0;//type 0普通 1出生，2死亡
 		
 		if($world)
@@ -69,7 +69,6 @@
 			$isDie = $time > -$role->d + $role->b;
 			if($isDie)
 			{
-				debug((int)(($time - $role->b)/$GameConfig->year));
 				$action->f = 0;
 				$action->ty = 2;
 				$role->d = 0;
@@ -88,6 +87,7 @@
 					$type = strToNum(substr($prop,0,1));
 					$quality = strToNum(substr($prop,1,1));
 					$action->f += (int)(pow($quality+3,1.5)*(1+rand(-10,10)/100));
+					$action->ty = 3;
 					array_push($remark,numToStr(1));//type
 					array_push($remark,$userData->prop->list[$propTime]);
 					
@@ -101,7 +101,7 @@
 			
 			
 			//---------------------------------------什么都没出现 61
-			array_push($remark,61);
+			array_push($remark,numToStr(61));
 			break;
 		}while(false);
 		
@@ -114,6 +114,8 @@
 		
 		return $action;
 	}
+	
+	
 	
 	
 ?> 

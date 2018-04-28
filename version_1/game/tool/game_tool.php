@@ -5,6 +5,7 @@
 	$GameConfig->currentLen = 30;//
 	$GameConfig->dieLen = 10;//
 	$GameConfig->historyLen = 20;//
+	$GameConfig->propLogLen = 20;//
 	
 	function createProp($quality){//首位为type,次位品质
 		$type = numToStr(1);
@@ -31,6 +32,22 @@
 			$obj->{$key}->h = $value->h;
 		}
 		return $obj;
+	}
+	
+	function encodeAction($oo){
+		return $oo->t."@".$oo->id."@".$oo->f."@".$oo->ty."@".$oo->r;
+	}
+	
+	function decodeAction($str){
+		$temp = explode("@",$str);
+		
+		$action = new stdClass();
+		$action->id = (int)$temp[1];
+		$action->t = (int)$temp[0];
+		$action->f = (int)$temp[2];
+		$action->ty = (int)$temp[3];
+		$action->r = $temp[4];
+		return $action;
 	}
 	
 	

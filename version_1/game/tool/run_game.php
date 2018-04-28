@@ -23,7 +23,8 @@ do{
 	{
 		foreach($myData->historyAction as $key=>$value)
 		{
-			array_push($historyActionRole,$value->id);
+			$oo = decodeAction($value);
+			array_push($historyActionRole,$oo->id);
 		}
 		break;
 	}
@@ -56,7 +57,8 @@ do{
 		$myData->action = array();//待执行
 		$myData->historyAction = array();//最近日志
 		$myData->role = new stdClass();//角色数据
-		$myData->cleanTime = time();//要真实时间
+		$myData->refreshTime = time();//要真实时间
+		$myData->propLog = array();//道具日志
 	}
 	
 	
@@ -126,12 +128,15 @@ do{
 	
 	while(true)
 	{
-		if(!$myData->action[0] || $myData->action[0]->t > $currentTime)
+		if(!$myData->action[0])
+			break;
+		$id = $myData->action[0]->id;
+		$role = $myData->role->{$id};
+		if($myData->action[0]->t + $role->b > $currentTime)
 			break;
 		$oo = array_shift($myData->action);
-		$id = $oo->id;
-		$role = $myData->role->{$id};
 		$role->f += $oo->f;
+		$action = encodeAction($oo);
 		if($oo->ty == 2)//死了
 		{
 			$role->d = $oo->t;
@@ -144,8 +149,16 @@ do{
 			if($role->f > $rankForce)
 				array_push($myData->rank,$id);
 		}
-		array_unshift($role->a,$oo);
-		array_unshift($myData->historyAction,$oo);
+		else if($oo->ty == 3)//用道具,记日志
+		{
+			$head = numToStr($role->h);
+			if(strlen($head) == 1)
+				$head = '0'.$head;
+			array_unshift($myData->propLog,$action.'@'.$head.$role->g.$role->n);
+		}
+		
+		array_unshift($role->a,$action);
+		array_unshift($myData->historyAction,$action);
 		array_unshift($historyActionRole,$id);
 	}
 	
@@ -160,6 +173,11 @@ do{
 	{
 		$myData->historyAction = array_slice($myData->historyAction,0,$GameConfig->historyLen);
 		$historyActionRole = array_slice($historyActionRole,0,$GameConfig->historyLen);
+	}
+	
+	if(count($myData->propLog) > $GameConfig->propLogLen)
+	{
+		$myData->propLog = array_slice($myData->propLog,0,$GameConfig->propLogLen);
 	}
 	
 	
@@ -200,13 +218,12 @@ do{
 	
 	
 	
-	
 	//清理过期数据
-	if(time() - $myData->cleanTime > 48*3600)
+	if(true)//(time() - $myData->cleanTime > 48*3600)
 	{
 		//过期角色
-		$myData->cleanTime = time();
-		$cleanDieTime = $currentTime - 36*3600;
+		// $myData->cleanTime = time();
+		// $cleanDieTime = $currentTime - 36*3600;
 		$ownData = new stdClass();
 		$removeArr = array();
 		
@@ -221,11 +238,17 @@ do{
 		{
 			$ownData->{$myData->die[$i]} = true;
 		}
+
+		$len = count($historyActionRole);//保留最近日志角色数据
+		for($i=$len-1;$i>=0;$i--)
+		{
+			$ownData->{$historyActionRole[$i]} = true;
+		}
 		
 		
 		foreach($myData->role as $key=>$value)
 		{
-			if($value->d > 100 && $value->d < $cleanDieTime && !$ownData->{$key})
+			if($value->d > 100 && !$ownData->{$key})
 			{
 				array_push($removeArr,$key);
 			}
@@ -237,10 +260,15 @@ do{
 		}
 		
 		//过期地方
-		array_shift($myData->world);
-		$maxWorld = 18 + 2*$userData->level;
-		while(count($myData->world) < $maxWorld)
+		if(time() - $myData->refreshTime > 24*3600)
+		{
+			$myData->refreshTime = time();
+			array_shift($myData->world);
+			$maxWorld = 18 + 2*$userData->level;
+			while(count($myData->world) < $maxWorld)
 			array_push($myData->world,createPlace());
+		}
+		
 	}
 	
 	

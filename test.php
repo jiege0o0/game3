@@ -42,7 +42,7 @@
 			return $num - 65 + 10;
 		return $num - 48;
 	}
-	echo rand(9,10.256);
+	// echo rand(9,10.256);
 		//echo pow(61,0);
-		 //echo numToStr(674993742);
+		 echo strToNum('zz');
 ?> 

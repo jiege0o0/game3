@@ -79,6 +79,8 @@
 		else
 			$arr = array_merge($myData->current,$historyActionRole);
 			
+			debug($arr);
+			// debug($myData->role);
 		$returnData->game->role = getRoleBase($arr,$myData->role);
 		
 		
@@ -110,6 +112,7 @@
 		
 		//其它数据返回
 		unset($userData->prop);
+		unset($returnData->remove_prop);
 		$userData->pk_version = $pk_version;
 		$returnData->data = $userData;
 		$userData->opentime = $serverOpenTime;
