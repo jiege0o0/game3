@@ -1,7 +1,7 @@
 <?php 
 	$num = $msg->num;
-	$cost = $num * 100;
-	$isFree = true;
+	$cost = $num * 30;
+	$isFree = $num == 0;
 	do{
 		if(!$isFree)
 		{
@@ -13,6 +13,18 @@
 			}
 			$userData->addDiamond(-$cost);
 		}
+		else 
+		{
+			if($userData->prop->freetime && time() - $userData->prop->freetime <4*3600)
+			{
+				$returnData -> fail = 2;
+				$returnData -> freetime = $userData->prop->freetime;
+				break;
+			}
+			$userData->prop->freetime = time();
+			$num = 1;
+		}
+		
 		require_once($filePath."game/tool/game_tool.php");
 		$temp = $num==1?9:7;
 		$arr = array();

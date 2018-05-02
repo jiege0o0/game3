@@ -79,7 +79,7 @@
 		else
 			$arr = array_merge($myData->current,$historyActionRole);
 			
-			debug($arr);
+			// debug($arr);
 			// debug($myData->role);
 		$returnData->game->role = getRoleBase($arr,$myData->role);
 		

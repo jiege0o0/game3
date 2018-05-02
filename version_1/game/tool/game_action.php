@@ -13,7 +13,7 @@
 		global $GameConfig,$userData; 
 		$role = new stdClass();
 		$role->id = $id;
-		$role->g = rand(1,2);//gender
+		$role->g = rand(1,3) ==1?2:1;//gender
 		$role->n = createName($role->g);//nick
 		$role->h = rand(1,400);//head
 		$role->b = $time - rand(5*$GameConfig->year,10*$GameConfig->year);//born
@@ -78,7 +78,7 @@
 		
 			//---------------------------------------发现道具 1
 			$len = count($userData->prop->list);
-			if(rand(1,10) <= 3 && rand(0,$len) >= rand(0,10))
+			if(rand(1,10) <= 1 && rand(0,$len) >= rand(0,10))
 			{
 				$propTime = rand(0,$len-1);
 				$prop = $userData->prop->list[$propTime];
@@ -96,7 +96,22 @@
 				}
 			}
 			
+			//---------------------------------------结婚/结拜 3
 			
+			
+			//---------------------------------------对战 4
+			
+			
+			//---------------------------------------创门派 5
+			
+			
+			//---------------------------------------加入门派 6
+			
+			
+			//---------------------------------------前往异界 7
+			
+			
+			//---------------------------------------XXX 8
 			
 			
 			

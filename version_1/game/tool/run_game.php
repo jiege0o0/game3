@@ -58,6 +58,7 @@ do{
 		$myData->historyAction = array();//最近日志
 		$myData->role = new stdClass();//角色数据
 		$myData->refreshTime = time();//要真实时间
+		$myData->dealTime = time();//要真实时间
 		$myData->propLog = array();//道具日志
 	}
 	
@@ -151,10 +152,10 @@ do{
 		}
 		else if($oo->ty == 3)//用道具,记日志
 		{
-			$head = numToStr($role->h);
-			if(strlen($head) == 1)
-				$head = '0'.$head;
-			array_unshift($myData->propLog,$action.'@'.$head.$role->g.$role->n);
+			// $head = numToStr($role->h);
+			// if(strlen($head) == 1)
+				// $head = '0'.$head;
+			array_unshift($myData->propLog,$action);//.'@'.$head.$role->g.$role->n
 		}
 		
 		array_unshift($role->a,$action);
@@ -219,14 +220,14 @@ do{
 	
 	
 	//清理过期数据
-	if(true)//(time() - $myData->cleanTime > 48*3600)
+	if(time() - $myData->dealTime > 3*3600)
 	{
-		//过期角色
-		// $myData->cleanTime = time();
-		// $cleanDieTime = $currentTime - 36*3600;
+		$myData->dealTime = time();
 		$ownData = new stdClass();
 		$removeArr = array();
 		
+		
+		//过期角色
 		$len = count($myData->rank);//保留排行榜角色数据
 		for($i=$len-1;$i>=0;$i--)
 		{
@@ -244,6 +245,14 @@ do{
 		{
 			$ownData->{$historyActionRole[$i]} = true;
 		}
+		
+		$len = count($myData->propLog);//保留道具日志角色数据
+		for($i=$len-1;$i>=0;$i--)
+		{
+			$oo = decodeAction($myData->propLog[$i]);
+			$ownData->{$oo->id} = true;
+		}
+		
 		
 		
 		foreach($myData->role as $key=>$value)

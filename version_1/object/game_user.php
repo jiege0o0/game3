@@ -106,9 +106,11 @@ class GameUser{
 	function removeProp($propID,$time){
 		global $returnData;
 		array_push($this->prop->remove,$propID.'@'.$time);
-		$index = array_search(propID,$this->prop->list);
+		$index = array_search($propID,$this->prop->list);
 		if($index === 0 || $index>0)
+		{
 			array_splice($this->prop->list,$index,1);
+		}
 		$this->setChangeKey('prop');
 
 		if(!$returnData->remove_prop)
